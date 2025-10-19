@@ -1,7 +1,6 @@
 #include "pzhelp"
 
 void simplify(int a, int b) {
-    int intPart = 0;
     //Krataei se apolyto gia na leitourgei h aplopoihsh
     int numerator = abs(a);
     int denumerator = abs(b);
@@ -21,13 +20,11 @@ void simplify(int a, int b) {
     numerator = abs(a) / gcd;
     denumerator = abs(b) / gcd;
     
-    //Blepei poses monades xwrane sto klasma afou auto exei aplopoihthei
-    while (numerator / denumerator >= 1) {
-        intPart++;
-        /*An yparxei monada allazoume ton arithmith afairontas apo auton 
-          ton paronomasth*/
-        numerator = numerator - denumerator;
-    }
+    //Bgazei ton akeraio mesa apo to klasma
+    int intPart = numerator / denumerator; //einai akeraia diairesh
+    
+    numerator = numerator - intPart * denumerator;
+    
     
     //Symfwna me thn askhsh
     if (numerator == 0) { 
