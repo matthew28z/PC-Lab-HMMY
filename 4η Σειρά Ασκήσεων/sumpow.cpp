@@ -23,26 +23,19 @@ int sumDigits(int* digits, int size, int power) {
     return sum;
 }
 
-int pow10(int num) {
-    int res = 1;
-    
-    while (num > 0) {
-        res *= 10;
-        num--;
-    }
-    
-    return res;
-}
 PROGRAM {
+    //Briskei to elaxisto panw orio
     const int N = READ_INT();
     
-    int validDigits = 1;
-    while ((validDigits * pow(9, N) < pow(10, validDigits + 1) - 1) && validDigits < 8) {
-        validDigits++;
+    int validDigits = 8;
+    while (validDigits * pow(9, N) < pow(10, validDigits) - 1) {
+        validDigits--;
     }
-    WRITELN(pow10(validDigits + 1) - 1);
+    
+    int upper = (int)pow(10, validDigits) - 1;
+    
     if (N <= 9 && N >= 0) {
-        for (int i = 0; i < pow10(validDigits + 1) - 1; i++) {
+        for (int i = 0; i <= upper; i++) {
             //Creates an array
             const int totalDigits = numOfDigits(i);
             int* digits = NEW(int, totalDigits);
@@ -50,7 +43,6 @@ PROGRAM {
             
             //Pernaei ta digits se enan pinaka
             for (int x = totalDigits - 1; x >= 0; x--) {
-                //Den mas noiazei h seira twn digits
                 digits[x] = tempI % 10;
                 //Einai akeraia diairesh
                 tempI /= 10;
@@ -58,7 +50,9 @@ PROGRAM {
             const int sum = sumDigits(digits, totalDigits, N);
             if (sum > i) {
                 //Skips some iterations
-                i += 10 -  i % pow10(numOfDigits(i) - 1);
+                int temp1 = i;
+                //Einai + 9 kai oxi 10 gt sto telos janaprosthetei 1
+                i += 9 -  i  % 10;
             } else if (sum == i) {
                 WRITELN(i);
             }
