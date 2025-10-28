@@ -8,7 +8,8 @@ PROGRAM {
     
     for (int i = 0; i < entries; i++) {
         char letter = getchar();
-        char* word = NEW(char, 20);
+        //21 giati krataw kai to \n
+        char* word = NEW(char, 21);
         
         int length = 0;
         while(letter != '\n' && length <= 20) {
