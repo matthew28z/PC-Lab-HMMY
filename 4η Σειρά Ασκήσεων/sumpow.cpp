@@ -1,7 +1,7 @@
 #include "pzhelp"
 
 //Pinakas me tis dynameis
-int* powers = NEW(int, 9);
+int* powers = NEW(int, 10);
 
 int numOfDigits(int num) {
     //Oloi exoun estw ena digit
@@ -21,7 +21,7 @@ int sumDigits(int* digits, int size) {
     
     for (int i = 0; i < size; i++) {
         //Briskei to psifio kai thn antistoixh dynamh
-        sum += powers[digits[i] - 1];
+        sum += powers[digits[i]];
     }
     
     return sum;
@@ -31,20 +31,29 @@ PROGRAM {
     //Briskei to elaxisto panw orio
     const int N = READ_INT();
     
-    for (int i = 0; i < 9; i++) {
-        powers[i] = (int)pow(i + 1, N);
+    for (int i = 0; i <= 9; i++) {
+        powers[i] = (int)pow(i, N);
     }
     
     int validDigits = 8;
+    const REAL maxUpper = pow(10, validDigits) - 1;
+    REAL realUpper = validDigits * pow(9, N);
 
-    while (validDigits * pow(9, N) < pow(10, validDigits) - 1) {
+    while (realUpper < pow(10, validDigits) - 1) {
         validDigits--;
+        realUpper = validDigits * pow(9, N);
     }
     
-    int upper = (int)pow(10, validDigits) - 1;
+    int upper;
+    
+    if (realUpper < maxUpper) {
+        upper = (int)realUpper;
+    } else {
+        upper = (int)maxUpper;
+    }
     
     int* digits = NEW(int, 1);
-    int tempDigits = 1;
+
     if (N <= 9 && N >= 0) {
         int tempDigits = 1;
         for (int i = 0; i <= upper; i++) {
