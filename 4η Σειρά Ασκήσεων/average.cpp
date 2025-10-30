@@ -1,101 +1,82 @@
 #include "pzhelp"
 
-#include <bits/stdc++.h>
-using namespace std;
-
-//Global
 REAL** matrix;
 
-//Functions
-bool goodInput(int val) {
-	bool isGood = true;
+const int rows = READ_INT();
+const int columns = READ_INT();
 
-	if (val < 1 || val > 100) {
-		isGood = false;
-	}
-
-	return isGood;
+bool isValid(int val) {
+	return (val >= 1 && val <= 100);
 }
 
-REAL* createSubMetrix(int lengthOfSM, int otherLength, bool isRow, int index) {
-	REAL* subMatrix = NEW(REAL, lengthOfSM);
-
-	for (int i = 0; i < lengthOfSM; i++) {
-		if (isRow) {
-			subMatrix[i] = matrix[index][i];
-		} else {
-			subMatrix[i] = matrix[i][index];
-			WRITELN(subMatrix[i], i, index);
-		}
-
-	}
-
-	return subMatrix;
-}
-
-REAL average(REAL* values, int length) {
+REAL averageOfList(REAL* list, int length) {
 	REAL sum = 0;
 
 	for (int i = 0; i < length; i++) {
-		sum += values[i];
+		sum += list[i];
 	}
 
 	return sum / length;
 }
 
-void fillMatrix(REAL* matrixToFill, int subMatrixLength, int otherLength, bool isRow) {
-	for (int i = 0; i < subMatrixLength; i++) {
-		REAL* subMatrix = createSubMetrix(subMatrixLength, otherLength, isRow, i);
+REAL* selectList(int index, bool isRow) {
+	REAL* list;
+	int length;
 
-		matrixToFill[i] = average(subMatrix, otherLength);
+	if (isRow) {
+		list = NEW(REAL, columns);
+		length = columns;
 
-		DELETE(subMatrix);
+		for (int i = 0; i < columns; i++) {
+			list[i] = matrix[index][i];
+		}
+	} else {
+		list = NEW(REAL, rows);
+		length = rows;
+
+		for (int i = 0; i < rows; i++) {
+			list[i] = matrix[i][index];
+		}
+	}
+
+	return list;
+}
+
+void fillWithAvs(REAL* arrayToFill, int length, bool isRow) {
+	int length2;
+
+	if (isRow) {
+		length2 = columns;
+	} else {
+		length2 = rows;
+	}
+
+	for (int i = 0; i < length; i++) {
+		arrayToFill[i] = averageOfList(selectList(i, isRow), length2);
 	}
 }
 
 PROGRAM {
-	auto start = chrono::high_resolution_clock::now();
-
-	const int rows = READ_INT();
-	const int columns = READ_INT();
-
-	if (goodInput(rows) && goodInput(columns)) {
+	if (isValid(rows) && isValid(columns)) {
 		matrix = NEW(REAL*, rows);
 
-		for (int x = 0; x < rows; x++) {
-			matrix[x] = NEW(REAL, columns);
+		for (int i = 0; i < rows; i++) {
+			matrix[i] = NEW(REAL, columns);
 
-			for (int y = 0; y < columns; y++) {
-				matrix[x][y] = READ_REAL();
+			//Passes the values onto the matrix
+			for (int j = 0; j < columns; j++) {
+				matrix[i][j] = READ_REAL();
 			}
 		}
+		//These will store the average values
+		REAL* avOfRows = NEW(REAL, rows);
+		fillWithAvs(avOfRows, rows, true);
 
-		REAL* avRows = NEW(REAL, rows);
-		fillMatrix(avRows, rows, columns, true);
+		REAL* avOfColumns = NEW(REAL, columns);
+		fillWithAvs(avOfColumns, columns, false);
 
-		for (int j = 0; j < rows; j++) {
-			WRITE("ROW");
-			WRITE("-");
-			WRITE(j);
-			WRITE(":", avRows[j], '\n');
-		}
+		WRITELN(FORM(averageOfList(avOfRows, rows), 0, 3));
+		WRITELN(FORM(averageOfList(avOfColumns, columns), 0, 3));
 
-		REAL* avColumns = NEW(REAL, columns);
-		fillMatrix(avColumns, columns, rows, false);
-
-		for (int j = 0; j < rows; j++) {
-			WRITE("COLUMN");
-			WRITE("-");
-			WRITE(j);
-			WRITE(":", avColumns[j], '\n');
-		}
-
-		WRITELN(FORM(average(avRows, rows), 0, 3));
-		WRITELN(FORM(average(avColumns, columns), 0, 3));
 	}
-
-	auto end = chrono::high_resolution_clock::now();
-	chrono::duration<double> elapsed = end - start;
-
-	cerr << "Execution time: " << elapsed.count() << " seconds\n";
 }
