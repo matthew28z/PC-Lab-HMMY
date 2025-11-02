@@ -15,7 +15,7 @@ PROGRAM {
     const REAL maxUpper = pow(10, validDigits) - 1;
     REAL realUpper = validDigits * pow(9, N);
 
-    while (realUpper < pow(10, validDigits) - 1) {
+    while ((realUpper < pow(10, validDigits) - 1) && validDigits > 1) {
         validDigits--;
         realUpper = validDigits * pow(9, N);
     }
@@ -27,7 +27,6 @@ PROGRAM {
     } else {
         upper = (int)maxUpper;
     }
-    
 
     if (N <= 9 && N >= 0) {
         for (int i = 0; i <= upper; i++) {
