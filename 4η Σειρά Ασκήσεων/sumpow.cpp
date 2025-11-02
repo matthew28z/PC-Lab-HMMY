@@ -3,30 +3,6 @@
 //Pinakas me tis dynameis
 int* powers = NEW(int, 10);
 
-int numOfDigits(int num) {
-    //Oloi exoun estw ena digit
-    int totalDigits = 0;
-    int temp = num;
-
-    while (temp > 0) {
-        totalDigits++;
-        temp /= 10;
-    }
-    
-    return totalDigits;
-}
-
-int sumDigits(int* digits, int size) {
-    int sum = 0;
-    
-    for (int i = 0; i < size; i++) {
-        //Briskei to psifio kai thn antistoixh dynamh
-        sum += powers[digits[i]];
-    }
-    
-    return sum;
-}
-
 PROGRAM {
     //Briskei to elaxisto panw orio
     const int N = READ_INT();
@@ -52,34 +28,17 @@ PROGRAM {
         upper = (int)maxUpper;
     }
     
-    int* digits = NEW(int, 1);
 
     if (N <= 9 && N >= 0) {
-        int tempDigits = 1;
         for (int i = 0; i <= upper; i++) {
-
-            const int totalDigits = numOfDigits(i);
-            
-            if (tempDigits < totalDigits) {
-                tempDigits = totalDigits;
-            
-            //Deletes the previous array    
-            DELETE(digits);
-            //Creates a new one
-            digits = NEW(int, totalDigits);
-            } else if (tempDigits == 0) {
-                digits = NEW(int, 1);
-            }
-            
             int tempI = i;
+            int sum = 0;
             
-            //Pernaei ta digits se enan pinaka
-            for (int x = totalDigits - 1; x >= 0; x--) {
-                digits[x] = tempI % 10;
-                //Einai akeraia diairesh
+            while (tempI > 0) {
+                sum += powers[tempI % 10];
                 tempI /= 10;
             }
-            const int sum = sumDigits(digits, totalDigits);
+            
             if (sum > i) {
                 //Skips some iterations
                 //Einai + 9 kai oxi 10 gt sto telos janaprosthetei 1
