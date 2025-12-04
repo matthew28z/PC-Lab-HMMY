@@ -73,8 +73,7 @@ int main() {
             int spaces = 1;
             int lastIndex = line.size();
 
-            while(line.size() != 60 && test < 20) {
-                test++;
+            while(line.size() != 60) {
                 int index = findSpace(line, lastIndex, spaces);
 
                 if (index != -1) {
