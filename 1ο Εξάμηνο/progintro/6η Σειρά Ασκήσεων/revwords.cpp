@@ -39,6 +39,9 @@ int main() {
         }
     }
 
+    //Clears the trailing empty vector, because the input ends with '\n'
+    lines.pop_back();
+
     for (vector<string> line : lines) {
         line.back().erase(remove(line.back().begin(), line.back().end(), '\n'), line.back().end());
 
