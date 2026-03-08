@@ -141,7 +141,3 @@ class State {
         int players;
         int currentPlayer; //sthn pragmatikothta einai nextPlayer alla brm na to allajw
 };
-
-int main() {
-    return 0;
-}
