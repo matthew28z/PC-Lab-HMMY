@@ -140,6 +140,10 @@ class RighteousPlayer : public Player {
                     }
                 }
 
+                if (max == 1) { //saves the program from taking 0 coins and putting -1 back
+                    max = 2;
+                }
+
                 return Move(sourceMax, max / 2, sourceMin, max / 2 - 1);
             }
 
