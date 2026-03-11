@@ -1,5 +1,3 @@
-#include "specker2n.cpp"
-
 //Based on some quick calculations the program will compete with around 360 other participants
 
 /*The algorithm follows a simple tactic, at first it checks if it can win instantly
