@@ -1,3 +1,5 @@
+#include "specker2n.cpp"
+
 //Based on some quick calculations the program will compete with around 360 other participants
 
 /*The algorithm follows a simple tactic, at first it checks if it can win instantly
@@ -23,8 +25,7 @@ class pi25b495 : public Player {
             for (int i = 0; i < s.getHeaps(); i++) {
                 if (s.getCoins(i) != 0) {
                     if (res != -1) {
-                        res = -1; //cannot win
-                        break;
+                        return -1; //cannot win
                     }
 
                     res = i;
@@ -123,5 +124,5 @@ class pi25b495 : public Player {
             return type;
         }
     private:
-        std::string type = std::string("\033[1;34mmatthew28z\033[0m");
+        std::string type = std::string("\033[1;34mmatthew28z-v0.0.0\033[0m");
 };
