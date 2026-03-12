@@ -10,9 +10,9 @@
  *for my player, or so I hope.
 */
 
-class pi25b495 : public Player {
+class v000 : public Player {
     public:
-        pi25b495(const std::string& n) : Player(n) { }
+        v000(const std::string& n) : Player(n) { }
 
         /*This function checks if an instant win is possible in this exact move/turn.
          *It does this by scanning to see if only one heap has any coins left.
