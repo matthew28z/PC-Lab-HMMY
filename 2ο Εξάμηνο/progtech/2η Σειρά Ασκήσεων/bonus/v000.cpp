@@ -1,3 +1,4 @@
+#include <iostream>
 #include <string>
 //Based on some quick calculations the program will compete with around 360 other participants
 
