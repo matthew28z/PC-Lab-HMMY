@@ -1,3 +1,4 @@
+#include <iostream>
 #include <string>
 
 class v004 : public Player {
