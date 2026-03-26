@@ -33,11 +33,7 @@ class ChessBoardArray {
     };
 
     public:
-        ChessBoardArray(unsigned size = 0, unsigned base = 0) : rootSize(size), start(base), length(size * size / 2 + size * size % 2), board(new int[length + 1]) {
-            for (int i = 0; i <= length; i++) {
-                board[i] = 0;
-            }
-        }
+        ChessBoardArray(unsigned size = 0, unsigned base = 0) : rootSize(size), start(base), length(size * size / 2 + size * size % 2), board(new int[length + 1] {}) { }
 
         ChessBoardArray(const ChessBoardArray& a) : rootSize(a.rootSize), start(a.start), length(a.rootSize * a.rootSize / 2 + a.rootSize * a.rootSize % 2), board(new int[length]) {
             for (int i = 0; i < length; i++) {
