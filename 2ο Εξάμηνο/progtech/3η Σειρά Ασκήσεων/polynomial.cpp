@@ -114,7 +114,7 @@ class Polynomial {
 
             if (counter > 0) { //saves space by not storing empty polynomials
                 if (counter == newSize) {
-                    this = Polynomial();
+                    *this = Polynomial();
 
                     return;
                 }
@@ -133,12 +133,12 @@ class Polynomial {
 
                 delete[] newTerms;
 
-                this = Polynomial(actualTerms, newSize - counter);
+                *this = Polynomial(actualTerms, newSize - counter);
 
                 return;
             }
 
-            this = Polynomial(newTerms, newSize);
+            *this = Polynomial(newTerms, newSize);
         }
 
         double evaluate(double x) {
