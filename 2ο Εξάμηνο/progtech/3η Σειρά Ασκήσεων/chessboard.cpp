@@ -110,7 +110,7 @@ class ChessBoardArray {
         int* board;
 
         unsigned int loc(int i, int j) const {
-            if (i >= rootSize + start || j >= rootSize + start) {
+            if (i >= rootSize + start || j >= rootSize + start || j < start || i < start) {
                 throw out_of_range("error");
             }
             const unsigned int base1Col = j - start + 1;
@@ -121,15 +121,15 @@ class ChessBoardArray {
 
             if ((isOddRow && !isOddCol) || (!isOddRow && isOddCol)) {
                 return length; //then select will output 0
+            } else if (i == start && j == start) {
+                return 0;
+            } else if (j == start) { //i - 1 is safe as we first check if i == start
+                return 1 + loc(i - 1, start + rootSize - 1 - rootSize % 2);
+            } else if (j == start + 1) {
+                return 1 + loc(i - 1, start + rootSize - 1 - (rootSize + 1) % 2);
             }
 
-            const unsigned int res = rootSize / 2 * (base1Row - 1) + base1Col - base1Col / 2 - (base1Row - 1) / 2 * (rootSize % 2);
-
-            if (res > length) { 
-                throw out_of_range("Error");
-            }
-
-            return res - 1; //get res back to base 0;
+            //If this point is reached we are on a white block that is not the first of its row
+            return 1 + loc(i, j - 2);
         }
 };
-}
