@@ -1,6 +1,8 @@
 #include <iostream>
 #include <cmath>
 
+using namespace std;
+
 class Polynomial {
     protected:
     class Term {
@@ -8,64 +10,129 @@ class Polynomial {
             int exponent;
             int coefficient;
             Term* next;
-
             Term(int exp, int coeff, Term* n) : exponent(exp), coefficient(coeff), next(n) { }
             friend class Polynomial;
 
+            //O compiler elege oti prepei na nai kai edw 
+            friend Polynomial operator + (const Polynomial& p, const Polynomial& q);
+            friend Polynomial operator * (const Polynomial& p, const Polynomial& q);
+            friend ostream& operator << (ostream& out, const Polynomial& p);
+
         public:
-            friend ostream& operator << (ostream& out, Term& t) {
-                if (coeffiecient == 0) {
+            friend ostream& operator << (ostream& out, const Term& t) {
+                if (std::abs(t.coefficient) != 1 && t.exponent != 0) { //dont push 1
+                    out << std::abs(t.coefficient);
+                }
+
+                if (t.exponent == 0) {
+                    if (t.coefficient > 0) {
+                        return out << " + " << std::abs(t.coefficient);
+                    }
+
+                    return out << " - " << std::abs(t.coefficient);
+                }
+
+                out << 'x';
+
+                if (t.exponent == 1) {
                     return out;
                 }
 
-                out << coefficient;
+                out << '^' << t.exponent;
 
-                if (exponent < 2) {
-                    return out;
+                if (t.next != nullptr) {
+                    if (t.next -> exponent > 0) {
+                        if (t.next -> coefficient > 0) {
+                            return out << " + ";
+                        }
+
+                        return out << " - "; //terms with coeff 0 are intended to not be stored
+                    }
                 }
 
-                out << '^' << exponent;
 
-                if (next == nullptr) {
-                    return out;
-                } else if (next -> coefficient > 0) {
-                    return out << " + ";
-                }
-
-                return out << " - ";
+                return out;
             }
 
         private:
             double termValue(int x) {
-                return std::pow(coefficient * x, exponent);
+
+                return std::pow(x, exponent) * coefficient;
             }
     };
 
     public:
-        Polynomial() : terms(new Term[1] {Term(0, 1, nullptr)}), size(1) { }
+        Polynomial() : first(nullptr) { }
 
-        Polynomial(const Polynomial& p) : terms(new Term[p.size]), size(p.size) {
-            for (int i = 0; i < size; i++) {
-                terms[i] = p.terms[i];
+        Polynomial(const Polynomial& p) {
+            if (p.first != nullptr) {
+                first = new Term(p.first -> exponent, p.first -> coefficient, nullptr);
+                Term* pr = first;
+                Term* n = nullptr;
+
+                Term* t = p.first -> next;
+
+                while (t != nullptr) {
+                    n = new Term(t -> exponent, t -> coefficient, nullptr);
+
+                    pr -> next = n;
+                    pr = n;
+
+                    t = t -> next;
+                }                
+            } else {
+                first = nullptr;
             }
         }
 
-        Polynomial(Term* t, size_t s) : terms(t), size(s) { } //helps somplify expansion logic
+        Polynomial(Term *f) : first(f) { } // helps later
 
         ~Polynomial() {
-            delete[] terms;
+            if (first != nullptr) {
+                Term* t = first;
+                Term* n = first -> next;
+
+                while (t != nullptr) {
+                    delete t;
+
+                    t = n;
+                    
+                    if (n != nullptr) {
+                        n = n -> next;
+                    }
+                }
+            }
         }
 
         Polynomial& operator = (const Polynomial& p) {
             if (this != &p) {
-                delete[] terms;
+                Term* temp = first;
 
-                size = p.size;
+                while (temp != nullptr) {
+                    Term* t = temp -> next;
 
-                terms = new Term[size];
+                    delete temp;
 
-                for (int i = 0; i < size; i++) {
-                    terms[i] = p.terms[i];
+                    temp = t;
+                }
+                
+                if (p.first != nullptr) {
+                    first = new Term(p.first -> exponent, p.first -> coefficient, nullptr);
+                    Term* pr = first;
+                    Term* n = nullptr;
+
+                    Term* t = p.first -> next;
+
+                    while (t != nullptr) {
+                        n = new Term(t -> exponent, t -> coefficient, nullptr);
+
+                        pr -> next = n;
+                        pr = n;
+
+                        t = t -> next;
+                    }  
+                } else {
+                    first = nullptr;
                 }
             }
 
@@ -73,160 +140,197 @@ class Polynomial {
         }
 
         void addTerm(int expon, int coeff) {
-            const size_t newSize = size + 1;
-            
-            Term* newTerms = new Term[newSize];
+            if (coeff != 0) { //does nothing if the term is 0
+                if (first != nullptr) { //checks if the polynomial is empty
+                    Term* t = first;
+                    Term* p = nullptr;
 
-            bool exists = false
-
-            unsigned int counter = 0;
-
-            for (int i = 0; i < size; i++) {
-                if (expon < terms[i].exponent) {
-                    newTerms[i] = terms[i];
-                } else if (expon > terms[i].exponent) {
-                    if (!exists) {
-                        exists = true;
-
-                        newTerms[i] = Term(expon, coeff, terms[i])
-                        
-                        if (i > 0) { //checks if the added term is the new first term
-                            newTerms[i - 1].next = newTerms[i];
-                        }
-
-                        continue;
-                    } 
-                    
-                    newTerms[i] = terms[i];
-                } else { // ==
-                    terms[i].coefficient += coeff;
-
-                    if (terms[i].coefficient == 0) {
-                        counter++;
+                    while (t != nullptr && t -> exponent > expon) {
+                        p = t;
+                        t = t -> next;
                     }
 
-                    newTerms[i] = terms[i];
-                }
+                    if (p == nullptr) { //checks if the value added should be the new first
+                        if (first -> exponent == expon) {
+                            int res = first -> coefficient + coeff;
 
-            }
+                            if (res != 0) {
+                                first -> coefficient = res;
+                            } else {
+                                Term* temp = first;
+                                first = first -> next;
 
-            newTerms[size] = terms[size - 1];
-
-            if (counter > 0) { //saves space by not storing empty polynomials
-                if (counter == newSize) {
-                    *this = Polynomial();
-
-                    return;
-                }
-
-                Term* actualTerms = new Term[newSize - counter];
-
-                for (int i = 0, j = 0; i < newSize; i++) {
-                    if (newTerms[i].coefficient != 0) {
-                        actualTerms[j++] = newTerms[i];
+                                delete temp;
+                            }
+                        } else {
+                            first = new Term(expon, coeff, first);
+                        }
+                    } else if (t == nullptr) { //checks if the value added should be the new last
+                        p -> next = new Term(expon, coeff, nullptr); //no need for a check  
                     } else {
-                        if (j > 0) {
-                            actualTerms[j - 1].next = newTerms[i].next;
+                        if (t -> exponent == expon) {
+                            int res = t -> coefficient + coeff;
+
+                            if (res != 0) {
+                                t -> coefficient = res;
+                            } else {
+                                p -> next = t -> next; //remove the empty Term
+
+                                delete t; //free the memory
+                            }
+                        } else {
+                            p -> next = new Term(expon, coeff, t);
                         }
                     }
+                } else {
+                    first = new Term(expon, coeff, nullptr);
                 }
-
-                delete[] newTerms;
-
-                *this = Polynomial(actualTerms, newSize - counter);
-
-                return;
             }
-
-            *this = Polynomial(newTerms, newSize);
         }
 
         double evaluate(double x) {
+            if (first == nullptr) {
+                return 0;
+            }
+
             double res = 0;
 
-            for (int i = 0; i < size; i++) {
-                res += terms[i].termValue(x);
+            Term* t = first;
+
+            while (t != nullptr) {
+                res += t -> termValue(x);
+
+                t = t -> next;
             }
 
             return res;
         }
 
         friend Polynomial operator + (const Polynomial& p, const Polynomial& q) {
-            if (p.terms[0].exponent < q.terms[0].exponent) {
-                return q + p;
-            } 
+            if (q.first == nullptr) { //covers the case of both being nullptr
+                return Polynomial(p);
+            } else if (p.first == nullptr) {
+                return Polynomial(q);
+            }
 
-            Term* maxTerms = new Term[p.size + q.size];
-            const int maxSize = p.size + q.size;
+            Term* t1 = p.first;
+            Term* t2 = q.first;
 
-            int counter = 0;
-            int remember = 0;
+            adjust(t1, t2);
 
-            for (int i = 0; i < p.size; i++) {
+            Term* newFirst = new Term(t1 -> exponent, t1 -> coefficient, nullptr); //creates the first Term
 
-                for (int j = remember; j < q.size; j++) {
-                    if (p.terms[i].exponent > q.terms[j].exponent) {
-                        maxTerms[counter++] = p.terms[i].exponent;
-                        break;
-                    } else if (p.terms[i].exponent == q.terms[j].exponent) {
-                        remember = j;
+            if (t1 -> exponent == t2 -> exponent) { 
+                newFirst -> coefficient += t2 -> coefficient;
+                t2 = t2 -> next;
+            }
 
-                        maxTerms[counter - 1].next = Term(p.terms[i].exponent, p.terms[i].coefficient + q.terms[j].coefficient, nullptr);
-                        maxTerms[counter++] = maxTerms[counter - 1].next;
+            Term* n = nullptr;
+            Term* pr = newFirst;
 
-                        break;
-                    } else {
-                        remember = j; 
+            t1 = t1 -> next;
 
-                        if (j == q.size - 1) {
-                            maxTerms[counter - 1].next = Term(p.terms[i].exponent, p.terms[i].coefficient, nullptr);
-                            maxTerms[counter++] = maxTerms[counter - 1].next;
+            adjust(t1, t2);
+
+            while (t1 != nullptr) {
+                n = new Term(t1 -> exponent, t1 -> coefficient, nullptr);
+                pr -> next = n;
+
+                Term* temp = pr; //back-up
+                pr = n;
+
+                if (t2 != nullptr) {
+                    if (t1 -> exponent == t2 -> exponent) {
+                        int res = n -> coefficient + t2 -> coefficient;
+
+                        if (res != 0) {
+                            n -> coefficient += t2 -> coefficient;                        
+                        } else {
+                            delete n;
+
+                            n = nullptr;
+                            pr = temp;
+                            pr -> next = nullptr;
                         }
+
+                        t2 = t2 -> next;
                     }
                 }
+
+                t1 = t1 -> next;
+
+                adjust(t1, t2);
             }
 
-            Term* actualTerms = new Term[counter];
+            if (newFirst -> coefficient == 0) {
+                Term* temp = newFirst;
 
-            for (int i = 0; i < counter; i++) {
-                actualTerms[i] = maxTerms[i];
+                delete newFirst;
+
+                newFirst = temp -> next;
             }
 
-            delete[] maxTerms;
-
-            return Polynomial(actualTerms, counter);
+            return Polynomial(newFirst);
         }
 
         friend Polynomial operator * (const Polynomial& p, const Polynomial& q) {
-            Term a = Polynomial();
-
-            Term* t = new Term[q.size];
-
-            for (int i = 0; i < p.size; i++) {
-                t[0] = Term(p.terms[i].exponent + q.terms[0].exponent, p.terms[i].coefficient * q.terms[0].coefficient, nullptr);
-
-                for (int j = 1; j < q.size; j++) {
-                    t[j - 1].next = Term(p.terms[i].exponent + q.terms[j].exponent, p.terms[i].coefficient * q.terms[j].coefficient, nullptr);
-                    t[j] = t[j - 1].next;
-                }
-
-                a = a + Polynomial(t, q.size);
+            if (p.first == nullptr || q.first == nullptr) {
+                return Polynomial();
             }
 
-            delete[] t;
+            Term* t = p.first;
+
+            Polynomial a = Polynomial();
+
+            cout << endl;
+            while(t != nullptr) {
+                Polynomial b(q);
+                Term* bT = b.first;
+
+                while (bT != nullptr) {
+                    bT -> coefficient *= t -> coefficient;
+                    bT -> exponent += t -> exponent;
+
+                    bT = bT -> next;
+                }
+
+                a = a + b;
+                t = t -> next;
+            }
 
             return a;
         }
 
         friend ostream& operator << (ostream& out, const Polynomial& p) {
-            for (int i = 0; i < size; i++) {
-                out << terms[i];
+            Term* t = p.first;
+
+            if (t == nullptr) {
+                return out << 0;
+            }
+
+            while (t != nullptr) {
+                out << *t;
+
+                t = t -> next;
             }
 
             return out;
         }
 
     private:
-        Term* terms;
-        size_t size;
+        Term* first;
+
+        static void adjust(Term*& a, Term*& b) {
+            if (a != nullptr && b != nullptr) {
+                if (a -> exponent < b -> exponent) { //a must be the bigger one
+                    Term* temp = a;
+
+                    a = b;
+                    b = temp;
+                } 
+            } else if (a == nullptr) {
+                a = b;
+                b = nullptr;
+            }
+        }
 };
