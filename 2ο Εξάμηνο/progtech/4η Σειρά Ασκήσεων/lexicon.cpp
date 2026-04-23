@@ -122,6 +122,8 @@ class lexicon {
             }
 
             if (root -> left == nullptr && root -> right == nullptr) {
+                delete root;
+                
                 root = nullptr;
 
                 return;
