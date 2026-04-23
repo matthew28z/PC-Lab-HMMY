@@ -68,7 +68,7 @@ class Movie {
                 }
             }
 
-            throw std::invalid_argument("To Gramma Den Einai Mikro Latiniko");
+            throw std::invalid_argument("To Gramma Den Einai Ayto Pou Nomiza Oti Tha Nai");
         };
 
         static bool isSmaller(std::string A, std::string B) { //this function assumes A and B are not the same
