@@ -122,8 +122,8 @@ class lexicon {
             }
 
             if (root -> left == nullptr && root -> right == nullptr) {
-                delete root;
-                
+                delete root; //clear memory
+
                 root = nullptr;
 
                 return;
@@ -212,6 +212,10 @@ class lexicon {
         }
 
         friend ostream& operator << (ostream& out, const lexicon& l) {
+            if (l.root == nullptr) {
+                return out;
+            }
+            
             out << *(l.root);
 
             return out;
