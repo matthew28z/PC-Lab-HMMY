@@ -48,7 +48,7 @@ bool alphabeticComparison(const std::string& A, const std::string& B) {
             }
         } while (a == b);
         //Elegxei pio gramma einai mikrotero
-        if (findInCharacters(a) > findInCharacters(b)) {
+        if (findInCharacters(a) < findInCharacters(b)) {
             return true;
         }
 
