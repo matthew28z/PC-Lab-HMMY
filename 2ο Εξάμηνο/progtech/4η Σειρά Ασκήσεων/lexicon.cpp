@@ -21,6 +21,8 @@ class lexicon {
               
             while (current != nullptr) {  
                 if (s == current -> word) {  
+                    current -> ref++;
+
                     return;  
                 }  
                   
@@ -72,7 +74,7 @@ class lexicon {
               
             while (current != nullptr) {  
                 if (current -> word == s) {  
-                    return current -> ref;  
+                    return depth;  
                 }  
                   
                 depth++;  
@@ -128,6 +130,8 @@ class lexicon {
                         prev1 -> right = nullptr;
                     }
                 }
+
+                delete entry1;
             } else if (entry1 -> left == nullptr) {  
                 if (prev1 == nullptr) {  
                     root = root -> right;  
@@ -138,6 +142,8 @@ class lexicon {
                         prev1 -> right = entry1 -> right;  
                     }  
                 }
+
+                delete entry1;
             } else if (entry1 -> right == nullptr) {  
                 if (prev1 == nullptr) {  
                     root = root -> left;  
@@ -149,29 +155,20 @@ class lexicon {
                                     
                     }  
                 }
+
+                delete entry1;
             } else {  
-                node* prevR = prev1;
                 node* replacement = entry1 -> right;
 
-                while (replacement -> left) {
-                    prevR = replacement;
+                while (replacement -> left != nullptr) {
                     replacement = replacement -> left;
                 }
 
-                if (prevR == prev1) {
-                    prevR -> right = nullptr;
-                } else {
-                    prevR -> left = nullptr;
-                }
+                entry1 -> word = replacement -> word;
+                entry1 -> ref = replacement -> ref;
 
-                if (wasLeft) {
-                    prev1 -> left = replacement;
-                } else {
-                    prev1 -> right = replacement;
-                }
+                delete replacement;
             }
-
-            delete entry1;
 
             node* entry2 = find(s2);
 
@@ -191,7 +188,7 @@ class lexicon {
                 return out;
             }
 
-            return out << l.root;
+            return out << *l.root;
         }
     private:  
         struct node {  
@@ -202,14 +199,14 @@ class lexicon {
                 }      
                 
                 friend std::ostream& operator << (std::ostream& out, const node& n) {
-                    if (n.left) {
-                        out << n.left;
+                    if (n.left != nullptr) {
+                        out << *n.left;
                     }
 
-                    out << n.word;
+                    out << n.word << ' ' << n.ref << std::endl;
 
-                    if (n.right) {
-                        return out << n.right;
+                    if (n.right != nullptr) {
+                        return out << *n.right;
                     }
 
                     return out;
@@ -243,3 +240,4 @@ class lexicon {
           
         node* root;  
 };  
+
